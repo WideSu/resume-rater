@@ -32,7 +32,7 @@ export const LoginPage: React.FC = () => {
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
           theme="light"
-          providers={[]} // We can add 'google', 'github' etc. if configured in Supabase
+          providers={['google']}
         />
       </div>
     </div>

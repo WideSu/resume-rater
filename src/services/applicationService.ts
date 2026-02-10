@@ -66,22 +66,27 @@ export const applicationService = {
     let result;
     if (application.id) {
         // Update
-        result = await supabase
+        const { data, error } = await supabase
             .from('job_applications')
             .update(payload)
             .eq('id', application.id)
-            .select()
-            .single();
+            .select();
+            
+        result = { data: data?.[0], error };
     } else {
         // Insert
-        result = await supabase
+        const { data, error } = await supabase
             .from('job_applications')
             .insert([payload])
-            .select()
-            .single();
+            .select();
+            
+        result = { data: data?.[0], error };
     }
 
-    if (result.error) throw result.error;
+    if (result.error) {
+        console.error('Supabase Save Error:', result.error);
+        throw result.error;
+    }
     
     const appId = result.data.id;
 
