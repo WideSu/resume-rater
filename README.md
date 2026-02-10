@@ -1,57 +1,22 @@
-# React + TypeScript + Vite
+# ResuMatch
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ResuMatch is an intelligent resume analysis and optimization tool designed to bridge the gap between job descriptions and candidate profiles. It features automated keyword extraction, real-time match scoring, a version-controlled resume editor, and personalized interview question generation. Built with React and Supabase, it helps job seekers tailor their applications and prepare effectively for technical interviews.
 
-Currently, two official plugins are available:
+## How to Run
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-## Expanding the ESLint configuration
+2. **Configure Environment**
+   Copy the example environment file and add your Supabase credentials:
+   ```bash
+   cp .env.example .env
+   ```
+   *Note: You will need a valid `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.*
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+3. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
