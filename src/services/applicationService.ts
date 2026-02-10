@@ -14,25 +14,16 @@ export interface JobApplication {
 
 export const applicationService = {
   async getAll() {
-    // For now, since we don't have auth enabled/enforced for "users" table in this MVP,
-    // we might just fetch all applications. 
-    // Ideally we filter by user_id, but let's assume a single-user local demo or handle anonymous users if needed.
-    // However, the schema has user_id NOT NULL.
-    // We need a way to identify the current user. 
-    // For this MVP, let's try to get the current session user, or if none, create a dummy one or handle gracefully.
-    
     const { data: { user } } = await supabase.auth.getUser();
     
-    let query = supabase
+    if (!user) return []; // Return empty if not logged in
+
+    const { data, error } = await supabase
       .from('job_applications')
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
       
-    if (user) {
-      query = query.eq('user_id', user.id);
-    }
-
-    const { data, error } = await query;
     if (error) throw error;
     return data as JobApplication[];
   },
@@ -51,14 +42,17 @@ export const applicationService = {
   async save(application: Partial<JobApplication> & { resume_content?: string }) {
     const { data: { user } } = await supabase.auth.getUser();
     
-    // If no user is logged in, we might have an issue with RLS or NOT NULL constraints.
-    // For the purpose of this agent demo, we'll try to proceed. 
-    // If user is null, we might need to rely on anon key permissions allowing inserts (which usually require a user_id).
-    // Let's assume we can get a user or the schema allows it.
+    if (!user) throw new Error('You must be logged in to save applications.');
+
+    // Ensure user exists in public.users table (Client-side sync for MVP)
+    const { error: userError } = await supabase
+        .from('users')
+        .upsert({ id: user.id, email: user.email }, { onConflict: 'id' });
     
-    // Actually, checking schema: user_id UUID REFERENCES users(id).
-    // If we are not logged in, we can't save effectively unless we implement auth or relax schema.
-    // Let's implement a quick anonymous sign-in if needed, or just try.
+    if (userError) {
+        console.error('Error syncing user:', userError);
+        // Continue anyway, it might already exist or RLS might handle it
+    }
     
     const payload = {
       company_name: application.company_name || 'Untitled Company',
@@ -66,7 +60,7 @@ export const applicationService = {
       jd_link: application.jd_link || '',
       jd_content: application.jd_content || '',
       updated_at: new Date().toISOString(),
-      ...(user ? { user_id: user.id } : {}) // Only add user_id if we have one
+      user_id: user.id
     };
 
     let result;

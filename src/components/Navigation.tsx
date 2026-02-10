@@ -1,6 +1,7 @@
-import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { LayoutDashboard, FileText, BarChart2, Edit3, MessageSquare } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, FileText, BarChart2, Edit3, MessageSquare, LogOut } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 import clsx from 'clsx';
 
 const navItems = [
@@ -12,6 +13,28 @@ const navItems = [
 ];
 
 export const Navigation: React.FC = () => {
+  const navigate = useNavigate();
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
+
+  if (!session) return null; // Don't show nav if not logged in (or show simplified one)
+
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,6 +64,15 @@ export const Navigation: React.FC = () => {
                 </NavLink>
               ))}
             </div>
+          </div>
+          <div className="flex items-center">
+             <button
+                onClick={handleLogout}
+                className="ml-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+             >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+             </button>
           </div>
         </div>
       </div>

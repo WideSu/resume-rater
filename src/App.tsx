@@ -6,6 +6,8 @@ import { TechMatchPage } from '@/pages/TechMatchPage';
 import { ResumeEditPage } from '@/pages/ResumeEditPage';
 import { InterviewPrepPage } from '@/pages/InterviewPrepPage';
 import { DashboardPage } from '@/pages/DashboardPage';
+import { LoginPage } from '@/pages/LoginPage';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 function App() {
   return (
@@ -14,12 +16,16 @@ function App() {
         <Navigation />
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/input" element={<InputPage />} />
-            <Route path="/match" element={<TechMatchPage />} />
-            <Route path="/edit" element={<ResumeEditPage />} />
-            <Route path="/interview" element={<InterviewPrepPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/input" element={<InputPage />} />
+              <Route path="/match" element={<TechMatchPage />} />
+              <Route path="/edit" element={<ResumeEditPage />} />
+              <Route path="/interview" element={<InterviewPrepPage />} />
+            </Route>
           </Routes>
         </main>
       </div>
